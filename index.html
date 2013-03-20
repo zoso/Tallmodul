@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Tallmodul v3</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <!-- <link rel="stylesheet" href="css/normalize.css"> -->
+        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="css/jquery.handsontable.full.css">
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+        <![endif]-->
+
+        <!-- Add your site or application content here -->
+        <p>Tallmodul</p>
+        <div id="tableContainer">
+
+        </div>
+        <div id="log"></div>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+        <script src="js/jquery.handsontable.full.js"></script>
+        <script src="js/jquery.matrise.js"></script>
+        <script>
+          $(document).ready(function () {
+            var l = $("#log");
+            function log(str) {
+                l.append("<br>"+str);
+                //window.console && console.log(m) || alert(m); 
+            }
+            var $container = $("#tableContainer");
+
+            var boldRender = function(instance, td, row, col, prop, value, cellProp) {
+                Handsontable.TextCell.renderer.apply(this, arguments);
+                $(td).css({
+                    "font-weight": "bold",
+                    "font-size": "14px"
+                });
+            }
+
+
+            var data = [
+              ["", "Maserati", "Mazda", "Mercedes", "Mini", "Mitsubishi"],
+              ["2009", 0, 2941, 4303, 354, 5814],
+              ["2010", 5, 2905, 2867, 412, 5284],
+              ["2011", 4, 2517, 4822, 552, 6127],
+              ["2012", 2, 2422, 5399, 776, 4151]
+            ];
+
+            var data2 = [
+              ["", "Opel", "Volvo", "Ford", "Suzuki", "Mitsubishi"],
+              ["2009", 0, 2941, 4303, 354, 5814],
+              ["2010", 5, 2905, 2867, 412, 5284],
+              ["2011", 4, 2517, 4822, 552, 6127],
+              ["2012", 2, 2422, 5399, 776, 4151]
+            ];
+
+            $container.handsontable({
+              data: data,
+              minRows: 5,
+              minCols: 6,
+              minSpareRows: 1,
+              autoWrapRow: true,
+              colHeaders: true,
+              rowHeaders: true,
+              //contextMenu: true,
+              multiSelect: true,
+              fillHandle: false,
+              columns: [
+
+              ],
+              cells: function(row, col, prop) {
+                 //return {type: {renderer: boldRender}};
+              },
+              onSelection: function(r, c, r2, c2) {
+                    //log("r: "+r+" c: "+c+" r2: "+r2+" c2: "+c2);
+              },
+              onSelectionByProp: function(r, p, r2, c2) {
+                    //log("--> r: "+r+" p: "+p+" r2: "+r2+" c2: "+c2);
+              },
+              contextMenu: {
+                callback: function(key, options) {
+                    if (key == "bold") {
+                        log("Setting the column to bold on element: "+$container.handsontable('getSelected'));
+                        $container.handsontable('loadData', data2);
+                        /*var s = $container.handsontable('getSelected').toString();
+                        var a = s.split(",");
+                        data[a[0]][a[1]] = "<b>hoeo</b>";
+
+                        $container.handsontable('render');*/
+                        //cells: function(row, col, prop) {
+                            //return {type: {renderer: boldRender}};
+                        //}
+                    }
+                },
+                items: {
+                    "bold": {
+                        name: "Sett celle i bold",
+                        disabled: function () {
+                          //if first row, disable this option
+                          log("selected: "+($container.handsontable('getSelected')[0] === 0));
+                          
+                        }
+                    }    
+                }
+                
+              }
+            });
+
+            //$('.ver').text($('#tableContainer').data('handsontable').version);
+          });
+        </script>
+    </body>
+</html>
