@@ -35,7 +35,7 @@
         <div id="log"></div>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
-        <script src="js/jquery.handsontable.full.07.js"></script>
+        <script src="js/jquery.handsontable.full.js"></script>
         <script src="js/jquery.matrise.js"></script>
         <script>
           $(document).ready(function () {
@@ -81,8 +81,8 @@
               colHeaders: true,
               rowHeaders: true,
               //contextMenu: true,
-              //multiSelect: true,
-              //fillHandle: false,
+              multiSelect: true,
+              fillHandle: false,
               /*columns: [
 
               ],
@@ -96,17 +96,36 @@
               onSelectionByProp: function(r, p, r2, c2) {
                     //log("--> r: "+r+" p: "+p+" r2: "+r2+" c2: "+c2);
               },*/
+              onSelection: function(r, c, r2, c2) {
+                    //log("r: "+r+" c: "+c+" r2: "+r2+" c2: "+c2);
+              },
               contextMenu: {
                 callback: function(key, options) {
-                    if (key == "bold") {
+                    switch(key) {
+                        case "bold":
+                            var s = $container.handsontable('getSelected').toString();
+                            var a = s.split(",");
+                            var t = $container.handsontable('getCell', a[0], a[1]);
+                            t.style.fontWeight = "bold";
+                            break;
+                        case "red":
+                            var s = $container.handsontable('getSelected').toString();
+                            var a = s.split(",");
+                            var t = $container.handsontable('getCell', a[0], a[1]);
+                            t.style.color = "#ff3300";
+                            break;
+                    }
                         //log("Setting the column to bold on element: "+$container.handsontable('getSelected'));
                         //$container.handsontable('loadData', data2);
-                        var s = $container.handsontable('getSelected').toString();
-                        var a = s.split(",");
+                        //var s = $container.handsontable('getSelected').toString();
+                        //var a = s.split(",");
                         //data[a[0]][a[1]] = "<b>hoeo</b>";
-                        log(">> getCell "+$container.handsontable('getCell', 1, 1));
-                        var t = $container.handsontable('getCell', a[0], a[1]);
-                        t.style.background = '#E3E4FA';
+                        //log(">> getCell "+$container.handsontable('getCell', a[0], a[1]));
+                        //var t = $container.handsontable('getCell', a[0], a[1]);
+                        //t.firstChild.style.background = '#E3E4FA';
+                        //t.setAttribute('style', 'background="#333"');
+                        //log("> t "+t.firstChild.data);
+                        //t.style.fontWeight = "bold";
                         //t.text("jjjj#");
                         //log("--> "+Handsontable.TableView.prototype.getCellAtCoords([1,1]));
 
@@ -120,17 +139,22 @@
                         //cells: function(row, col, prop) {
                             //return {type: {renderer: boldRender}};
                         //}
-                    }
+                   // }
+
+
                 },
                 items: {
                     "bold": {
-                        name: "Sett celle i bold",
+                        name: "Sett celle i bold"
                         /*disabled: function () {
                           //if first row, disable this option
                           log("selected: "+($container.handsontable('getSelected')[0] === 0));
                           
                         }*/
-                    }    
+                    },
+                    "red": {
+                        name: "Sett celle rød"
+                    }  
                 }
                 
               }
