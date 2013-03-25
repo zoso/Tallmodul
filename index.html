@@ -15,66 +15,7 @@
 		<!-- <link rel="stylesheet" href="css/normalize.css"> -->
 		<link rel="stylesheet" href="css/main.css">
 		<link rel="stylesheet" href="css/jquery.handsontable.full.css">
-		<style>
-			#tableContainer {
-				width: 800px;
-			}
-			.bold {
-				font-weight: bold;
-				font-size: 16px;
-			}
-
-			.red {
-				color: #ff3300;
-			}
-
-			.line-under {
-				background-color: #ccc;
-				border-bottom: 1px solid #000;
-			}
-
-			.right {
-				text-align: right;
-			}
-
-			.left {
-				text-align: left;
-			}
-
-			.center {
-				text-align: center;
-			}
-
-			.cellBg {
-				background-color: #ff3300;
-				
-			}
-			
-			.btn {
-				padding: 5px;
-				background-color: #ccc;
-				width: 100px;
-				height: 40px;
-				text-align: center;
-				margin: 5px;
-				line-height: 40px;
-				float: left;
-			}
-			.btn a {
-				text-decoration: none;
-				color: #111;
-				font-family: Verdana;
-				font-size: 10px;
-			}
-
-			#log {
-				margin-left: 10px;
-				width: 300px;
-				clear: both;
-				font-family: Verdana;
-				font-size: 10px;
-			}
-		</style>
+		
 	</head>
 	<body>
 		<!--[if lt IE 7]>
@@ -126,6 +67,12 @@
 			//get data from table
 			function getData() {
 				log("--> "+$container.handsontable('getData'));
+				var d = $container.handsontable('getData');
+				for (var i in d) {
+					for (var j in d[i]) {
+						log(j+" > "+d[i][j]);
+					}
+				}
 			}
 
 			//get td element(s)
@@ -180,6 +127,24 @@
 				}
 			}
 
+			/* renderz */
+			function cssRenderer(instance, td, row, col, prop, value, cellProperties) {
+				Handsontable.TextCell.renderer.apply(this, arguments);
+				log("instance: "+instance+" td: "+td+" r: "+row+" col: "+col+" p: "+prop+" v: "+value);
+				if (prop == "name.txt") {
+					var d = $container.handsontable('getDataAtRowProp', row, 'name.class');
+					//log("data -> "+d);
+					$(td).toggleClass(d);
+				}
+
+				if (prop == "test.txt") {
+					var d = $container.handsontable('getDataAtRowProp', row, 'test.class');
+					//log("data -> "+d);
+					$(td).toggleClass(d);
+				}
+				//td.style.background = "#ccc";
+			}
+
 			var data3 = [
 			  ["", "Maserati", "Mazda", "Mercedes", "Mini", "Mitsubishi"],
 			  ["2009", 0, 2941, 4303, 354, 5814],
@@ -197,10 +162,25 @@
 			];
 
 			var data = [
-			    model({id: 1, name: "Ted Right", address: ""}),
-			    model({id: 2, name: "Frank Honest", address: ""}),
-			    model({id: 3, name: "Joan Well", address: ""})
+			    {id: 1, name: "Ted Right", address: "", class: "bold"},
+			    {id: 2, name: "Frank Honest", address: "", class: "red bold"},
+			    {id: 3, name: "Joan Well", address: "", class: "bold"}
 			];
+
+			var datatest = [
+				{
+					id: 1, name: {txt: "hello", class: "bold"}, test: {txt: "home", class:"red right"}
+				},
+				{
+					id: 2, name: {txt: "hello 2", class: "red"}, test: {txt: "home", class:"line-under right"}	
+				},
+				{
+					id: 3, name: {txt: "Yo", class: "bold right"}, test: {txt: "home", class:"right"}
+				},
+				{
+					id: 4, name: {txt: "last", class: "red center"}, test: {txt: "away", class:"center"}
+				}
+			]
 			 //dataSchema: model,
 
 			function model(options) {
@@ -229,18 +209,21 @@
 			}
 
 			$container.handsontable({
-			  data: data,
-			  dataSchema: model,
-			  minRows: data.length,
-			  minCols: 6,
+			  data: datatest,
+			  //dataSchema: model,
+			  //minRows: data.length,
+			  //minCols: 6,
 			  minSpareRows: 1,
 			  autoWrapRow: true,
-			  colHeaders: ['ID', 'Name', 'Address'],
-			  columns: [
-			  		{data: property('id')},
-			  		{data: property('name')},
-			  		{data: property('address')}
-			  ],
+			  colHeaders: ['Name', 'Address'],
+			  minCols: data.length -1,
+			  cells: function (row, col, prop) {
+      			return { type: { renderer: cssRenderer } }
+      		  },
+      		  columns: [
+      		  	{data: "name.txt"},
+      		  	{data: "test.txt"}
+      		  ],
 			  rowHeaders: true,
 			  multiSelect: true,
 			  fillHandle: false,

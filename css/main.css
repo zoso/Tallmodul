@@ -1,1 +1,11 @@
-
+#tableContainer{width:800px;}
+.bold{font-weight:bold;font-size:16px;}
+.red{color:#ff3300;}
+.line-under{background-color:#ccc;border-bottom:1px solid #000;}
+.right{text-align:right;}
+.left{text-align:left;}
+.center{text-align:center;}
+.cellBg{background-color:#ff3300;}
+.btn{padding:5px;background-color:#ccc;width:100px;height:40px;text-align:center;margin:5px;line-height:40px;float:left;}
+.btn a{text-decoration:none;color:#111;font-family:Verdana;font-size:10px;}
+#log{margin-left:10px;width:600px;clear:both;font-family:Verdana;font-size:10px;}
