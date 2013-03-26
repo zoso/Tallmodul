@@ -52,7 +52,8 @@
 				e.preventDefault();
 				switch($(this).data("id")) {
 					case "save":
-						getData();
+						//getData();
+						saveData();
 						log("saving table...");
 						break;
 					case "load":
@@ -64,13 +65,84 @@
 				}
 			})
 
+			//Save data - test
+			function saveData() {
+				log("--> cols "+$container.handsontable('countCols'));
+				var cols = $container.handsontable('countCols');
+				$container.find("table").each(function(i) {
+					var $el = $(this);
+					//log($el);
+					/*for (var i in $el) {
+						log(i + " > "+$el[i]);
+					}*/
+					//id: 0, name: {txt: "hello", class: "bold"}, test: {txt: "home", class:"red right"}
+					var arr = [];
+					$el.find("tr").each(function(i) {
+						var $tr = $(this);
+						//$(this).children().each(function(i) {
+							//log(i+" > "+$(this).text());
+						//});
+						/*for (var j = 0; j < $(this).children().length; j++) {
+							log(j+" > "+$(this).text());
+						}*/
+						log("----");
+						var obj = {};
+						$tr.find('td').each(function() {
+							$td = $(this);
+							log($(this).text() + " > "+$(this).attr("class"));
+							if ($td.text() != "") {
+								obj = {
+									id: i,
+									name: {
+										txt: $td.text(),
+										class: $td.attr("class")
+									},
+									test: {
+										txt: $td.text(),
+										class: $td.attr("class")
+									}
+								}
+							}
+
+						});
+						arr.push(obj);
+						/*var obj = {};
+						if ((i%cols) == 0) {
+							obj.id = i;
+							obj.name = {
+								txt: $(this).text(),
+								class: $(this).attr("class")
+							}
+						} else {
+							obj.id = 1;
+							obj.test = {
+								txt: $(this).text(),
+								class: $(this).attr("class")
+							}
+						}
+						
+						
+						arr.push(obj);
+						log("> "+i + "mod: "+(i%cols)+" > "+$(this).text()+" class: "+$(this).attr("class"));*/
+					})
+
+					$container.handsontable('loadData', arr);
+
+					// if element type is table
+					/*if ($el.data('type') == 'table') {
+						log("hello");
+					};*/
+				})
+			}
+
 			//get data from table
 			function getData() {
 				log("--> "+$container.handsontable('getData'));
 				var d = $container.handsontable('getData');
+				//var t = $container.handsontable('getCell', row, col);
 				for (var i in d) {
 					for (var j in d[i]) {
-						log(j+" > "+d[i][j]);
+						log(j+" > "+d[i][j].class);
 					}
 				}
 			}
@@ -169,16 +241,16 @@
 
 			var datatest = [
 				{
-					id: 1, name: {txt: "hello", class: "bold"}, test: {txt: "home", class:"red right"}
+					id: 0, name: {txt: "hello", class: "bold"}, test: {txt: "home", class:"red right"}
 				},
 				{
-					id: 2, name: {txt: "hello 2", class: "red"}, test: {txt: "home", class:"line-under right"}	
+					id: 1, name: {txt: "hello 2", class: "red"}, test: {txt: "hom lslse", class:"line-under right"}	
 				},
 				{
-					id: 3, name: {txt: "Yo", class: "bold right"}, test: {txt: "home", class:"right"}
+					id: 2, name: {txt: "Yo", class: "bold right"}, test: {txt: "home", class:"right"}
 				},
 				{
-					id: 4, name: {txt: "last", class: "red center"}, test: {txt: "away", class:"center"}
+					id: 3, name: {txt: "last", class: "red center"}, test: {txt: "away", class:"center"}
 				}
 			]
 			 //dataSchema: model,
