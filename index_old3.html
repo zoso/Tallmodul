@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<title>Tallmodul v3</title>
+		<meta name="description" content="">
+		<meta name="viewport" content="width=device-width">
+
+		<link rel="stylesheet" href="css/main.css">
+		<link rel="stylesheet" href="css/jquery.handsontable.full.css">
+		
+	</head>
+	<body>
+		<p>Tallmodul</p>
+		<div id="tableContainer">
+			<!-- table here -->
+		</div>
+		<div style="border-bottom: 1px solid #ddd">&nbsp;</div>
+		<div class="btn" id="saveBtn"><a href="#" data-id="save">Lagre tabell</a></div>
+		<div class="btn" id="loadBtn"><a href="#" data-id="load">Hent tabell</a></div>
+		<div class="btn" id="deleteBtn"><a href="#" data-id="deleteLog">Slett logg</a></div>
+
+		<div id="log"></div>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+		<script src="js/jquery.handsontable.full.js"></script>
+		<script src="js/jquery.matrise.js"></script>
+		<script>
+		  $(document).ready(function () {
+			var l = $("#log");
+			function log(str) {
+				l.append("<br>"+str);
+				//window.console && console.log(m) || alert(m); 
+			}
+			//table container
+			var $container = $("#tableContainer");
+
+			//buttons (test)
+			$(".btn a").on("click", function(e) {
+				e.preventDefault();
+				switch($(this).data("id")) {
+					case "save":
+						//getData();
+						saveData();
+						log("saving table...");
+						break;
+					case "load":
+						log("load table...");
+						break;
+					case "deleteLog":
+						l.html("");
+						break;
+				}
+			})
+
+			//Save data - test
+			function saveData() {
+				log("--> cols "+$container.handsontable('countCols'));
+				var cols = $container.handsontable('countCols');
+				$container.find("table").each(function(i) {
+					var $el = $(this);
+					//log($el);
+					/*for (var i in $el) {
+						log(i + " > "+$el[i]);
+					}*/
+					//id: 0, name: {txt: "hello", class: "bold"}, test: {txt: "home", class:"red right"}
+					var arr = [];
+					$el.find("tr").each(function(i) {
+						var $tr = $(this);
+						//$(this).children().each(function(i) {
+							//log(i+" > "+$(this).text());
+						//});
+						/*for (var j = 0; j < $(this).children().length; j++) {
+							log(j+" > "+$(this).text());
+						}*/
+						log("----");
+						var obj = {};
+						$tr.find('td').each(function() {
+							$td = $(this);
+							log($(this).text() + " > "+$(this).attr("class"));
+							/*if ($td.text() != "") {
+								obj = {
+									id: i,
+									name: {
+										txt: $td.text(),
+										class: $td.attr("class")
+									},
+									test: {
+										txt: $td.text(),
+										class: $td.attr("class")
+									}
+								}
+							}*/
+
+						});
+						arr.push(obj);
+						/*var obj = {};
+						if ((i%cols) == 0) {
+							obj.id = i;
+							obj.name = {
+								txt: $(this).text(),
+								class: $(this).attr("class")
+							}
+						} else {
+							obj.id = 1;
+							obj.test = {
+								txt: $(this).text(),
+								class: $(this).attr("class")
+							}
+						}
+						
+						
+						arr.push(obj);
+						log("> "+i + "mod: "+(i%cols)+" > "+$(this).text()+" class: "+$(this).attr("class"));*/
+					})
+
+					//$container.handsontable('loadData', arr);
+
+					// if element type is table
+					/*if ($el.data('type') == 'table') {
+						log("hello");
+					};*/
+				})
+			}
+
+			//get data from table
+			function getData() {
+				log("--> "+$container.handsontable('getData'));
+				var d = $container.handsontable('getData');
+				//var t = $container.handsontable('getCell', row, col);
+				for (var i in d) {
+					for (var j in d[i]) {
+						log(j+" > "+d[i][j].class);
+					}
+				}
+			}
+
+			//get td element(s)
+			function getSelected() {
+				//[startRow, startCol, endRow, endCol]
+				var s = $container.handsontable('getSelected').toString();
+				var a = s.split(",");
+				var col = 1;
+				var rows = 1;
+				var obj = {};
+
+				if (a[1] == a[3]) {
+					//log("samme kolonne");
+				} else {
+					//log("flere kolonner. Ant: "+(Math.abs(a[1] - a[3])+1));
+					col = (Math.abs(a[1] - a[3])+1);
+				}
+
+				if (a[0] == a[2]) {
+					//log("enkel rekke");
+				} else {
+					//log("flere rekker. Ant: "+(Math.abs(a[0] - a[2])+1));
+					rows = (Math.abs(a[0] - a[2])+1);
+				}
+
+				obj = {
+					startrow: a[0],
+					/*endrow: a[2],*/
+					startcol: a[1],
+					/*endcol: a[3],*/
+					col: col,
+					rows: rows
+				}
+
+				return obj;
+			}
+
+			function setStyle(styleclass, old = false) {
+				var a = getSelected();
+				for (var i = 0; i < a.col; i++) {
+					for (var j = 0; j < a.rows; j++) {
+						var row = j+parseInt(a.startrow);
+						var col = i+parseInt(a.startcol);
+						var t = $container.handsontable('getCell', row, col);
+						if (old) {
+							//t.style.background = "#ff33ff";
+						} else {
+							$(t).toggleClass(styleclass);
+						}
+						//log("---> old: "+old+" "+styleclass+" > "+t.className+" > "+t.cellIndex+" > "+t.parentNode);
+					}
+				}
+			}
+
+			/* renderz */
+			function cssRenderer(instance, td, row, col, prop, value, cellProperties) {
+				Handsontable.TextCell.renderer.apply(this, arguments);
+				log("instance: "+instance+" td: "+td+" r: "+row+" col: "+col+" p: "+prop+" v: "+value);
+				/*if (prop == "name.txt") {
+					var d = $container.handsontable('getDataAtRowProp', row, 'name.class');
+					$(td).toggleClass(d);
+				}
+
+				if (prop == "test.txt") {
+					var d = $container.handsontable('getDataAtRowProp', row, 'test.class');
+					$(td).toggleClass(d);
+				}*/
+
+				for (var n in prop) {
+					//log("prop: "+n+" > "+prop[n]);
+				}
+
+				/*for (var i in value) {
+					log(i+" > "+value[i]);
+					if (i == "name") {
+						$(td).text(value[i]);
+					}
+
+					if (i == "class") {
+						$(td).toggleClass(value[i]);
+					}
+
+					/*for (var j in value[i]) {
+						log("-> "+j+" > "+value[i][j]);
+					}
+				}*/
+
+				//td.style.background = "#ccc";
+			}
+
+			//4 colums
+			var dataArr = [
+				
+					[
+						{col1: "hello", class:"bold"},
+						{col2: "hello", class:"bold"},
+						{col3: "hello", class:"bold"},
+						{col4: "hello", class:"bold"}
+					],
+					[
+						{col1: "hello", class:"bold"},
+						{col2: "hello", class:"bold"},
+						{col3: "hello", class:"bold"},
+						{col4: "hello", class:"bold"}
+					]
+				
+			]
+
+			/*
+			var data2 = [
+			  ["", "Opel", "Volvo", "Ford", "Suzuki", "Mitsubishi"],
+			  ["2009", 0, 2941, 4303, 354, 5814],
+			  ["2010", 5, 2905, 2867, 412, 5284],
+			  ["2011", 4, 2517, 4822, 552, 6127],
+			  ["2012", 2, 2422, 5399, 776, 4151]
+			];
+			*/
+
+			//create a data schema
+			//dataSchema: {id: null, name: {first: null, last: null}, address: null}
+
+			function createDataSchema() {
+
+				return {col0: "", col1:"", col2:"", col3:""};
+			}
+
+			//log("--> "+dataArr[0].data.length);
+
+			$container.handsontable({
+			  data: dataArr,
+			  //dataSchema: createDataSchema(),
+			  //minRows: data.length,
+			  //minCols: 6,
+			  //minSpareRows: 1,
+			  autoWrapRow: true,
+			  //colHeaders: ['Name', 'Address'],
+			  //minCols: data.length -1,
+			  
+      		  //columns: data.name,
+      		  
+      		  cells: function (row, col, prop) {
+      			return { type: { renderer: cssRenderer } }
+      		  },
+			  //rowHeaders: true,
+			  multiSelect: true,
+			  fillHandle: false,
+			  contextMenu: {
+				callback: function(key, options) {
+					//log("key > "+key);
+					var a = getSelected();
+					switch(key) {
+						case "bold":
+							setStyle("bold");
+							break;
+						case "red":
+							setStyle("red");
+							break;
+						case "lineunder":
+							setStyle("line-under");
+							break;
+						case "right":
+							setStyle("right");
+							break;
+						case "left":
+							setStyle("left");
+							break;
+						case "center":
+							setStyle("center");
+							break;
+						case "background":
+							setStyle("cellBg", true);
+							break;
+						case "background-css":
+							setStyle("cellBg");
+							break;
+						case "turnOffMenu":
+							$container.handsontable('updateSettings', {contextMenu: false});
+							break;
+					}
+				},
+				items: {
+					"bold": {
+						name: "Sett celle i bold"
+						/*
+						disabled: function () {
+						  //if first row, disable this option
+						  log("selected: "+($container.handsontable('getSelected')[0] === 0));
+						}
+						*/
+					},
+					"red": {
+						name: "Sett celle rød"
+					},
+					"lineunder": {
+						name: "Sett strek under"
+					},
+					"right": {
+						name: "Sett høyrejustert"
+					},
+					"left": {
+						name: "Sett venstrejustert"
+					},
+					"center": {
+						name: "Sett sentrert"
+					},
+					"background": {
+						name: "Sett bakgrunn"
+					},
+					"background-css": {
+						name: "Sett bakgrunn (css)"
+					},
+					"hsep2": "---------",
+					"turnOffMenu": {
+						name: "Slå av meny"
+					}
+						
+				}
+				
+			  }
+			});
+		  });
+		</script>
+	</body>
+</html>
